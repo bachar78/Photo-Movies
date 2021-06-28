@@ -1,5 +1,5 @@
 //Logo Effect
-const title = document.querySelector("h1");
+const title = document.querySelector("#logo");
 titleText = title.textContent;
 titleArray = titleText.split("");
 
@@ -151,42 +151,13 @@ videobtn.addEventListener('click', (e) => {
   <div class="gallery"></div>
   <div class="summary opacity"></div>
 </main>`
-  //Logo Effect
-const title = document.querySelector("h1");
-titleText = title.textContent;
-titleArray = titleText.split("");
-
-title.innerHTML = "";
-for (let i = 0; i < titleArray.length; i++) {
-  title.innerHTML += `<span>${titleArray[i]}</span>`;
-}
-
-let char = 0;
-let interval = setInterval(onTrack, 100);
-
-function onTrack() {
-  const span = title.querySelectorAll("span")[char];
-  span.classList.add("fade");
-  char++;
-  if (char === titleArray.length) {
-    complete();
-  }
-}
-
-function complete() {
-  clearInterval(interval);
-  interval = null;
-}
-
+  
 //the search button
 const gallery = document.querySelector('.gallery');
 const searchInput = document.querySelector('.search-input');
 const form = document.querySelector('.search-form');
 let searchValue;
-const more = document.querySelector('.more');
-let page = 1;
-let fetchLink;
-let currentSearch;
+
 
 const fetchData = async (searchTerm) => {
     const parameters = {params: {apikey: "ad16638d", s: searchTerm}}
@@ -206,7 +177,6 @@ function clear() {
 searchInput.addEventListener('input', updateInput);
 function updateInput(e) {
     searchValue = e.target.value;
-    currentSearch = searchValue;
 }
 
 form.addEventListener('submit', (e) => {
@@ -226,6 +196,7 @@ async function generatingMovie(data) {
     </div>
     <img src = ${movie.Poster}></img>
     `;
+    
     gallery.appendChild(galleryMovie);
     galleryMovie.addEventListener('click', async () => {
         const movieInfo = document.createElement('div');
@@ -248,14 +219,18 @@ async function generatingMovie(data) {
       <p>Metasore: ${movieSelected.Metascore}</p>
       <p>IMDB Rating: ${movieSelected.imdbRating}</p>
       <p>IMDB Votes: ${movieSelected.imdbVotes}</p>
+      <button class='close'>Close</button>
     `;
-        summary.appendChild(movieInfo);
-        
+      summary.appendChild(movieInfo);
+      const btnClose = document.querySelector('.close');
+    btnClose.addEventListener('click', event => {
+      summary.innerHTML = '';
+      })
     })
-    
+      
     });
 }
-    
+   
 const onMovieClick = async (movie) => {
     const parameters = {params: {apikey: "ad16638d", i: movie.imdbID}}
     const response = await axios.get('http://www.omdbapi.com/', parameters);
@@ -270,14 +245,7 @@ async function searchMovie(query) {
     generatingMovie(data);
 }
 
-const summary = document.querySelector('.summary');
-    document.addEventListener('click', event => {
-        if (summary.contains(event.target) && summary.classList.contains('opacity')) {
-            summary.innerHTML = '';
-            summary.classList.remove('opacity')
-            
-        }
-      })
-
-
+searchMovie('dragon');
 })
+
+
