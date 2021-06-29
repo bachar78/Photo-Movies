@@ -1,210 +1,90 @@
-//Logo Effect
-const title = document.querySelector("#logo");
-titleText = title.textContent;
-titleArray = titleText.split("");
-
-title.innerHTML = "";
-for (let i = 0; i < titleArray.length; i++) {
-  title.innerHTML += `<span>${titleArray[i]}</span>`;
-}
-
-let char = 0;
-let interval = setInterval(onTrack, 100);
-
-function onTrack() {
-  const span = title.querySelectorAll("span")[char];
-  span.classList.add("fade");
-  char++;
-  if (char === titleArray.length) {
-    complete();
-  }
-}
-
-function complete() {
-  clearInterval(interval);
-  interval = null;
-}
-
+main();
 //Home Page
+function main() {
+  creatHtmlHome();
+  createEffect();
+  const photobtn = document.querySelector(".left a");
+  photobtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    createPhotoPageHTML();
+    const searchInput = document.querySelector(".search-input");
+    const form = document.querySelector(".search-form");
+    let searchValue;
+    const more = document.querySelector(".more");
+    searchInput.addEventListener("input", updateInput);
+    function updateInput(e) {
+      searchValue = e.target.value;
+      currentSearch = searchValue;
+    }
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      searchPhotos(searchValue);
+    });
+    more.addEventListener("click", loadMore);
+    curatedPhotos();
+  });
+}
 
-const photobtn = document.querySelector(".left a");
-const videobtn = document.querySelector(".right a");
-const container = document.querySelector(".container");
+const videoBtn = document.querySelector(".right a");
 
-photobtn.addEventListener("click", (e) => {
+videoBtn.addEventListener("click", (e) => {
   e.preventDefault();
-  container.innerHTML = "";
-  container.innerHTML = `
-    <section>
-    <div class="box">
-        <form class="search-form">
-            <input type="text" name="search" placeholder="Type..." class="search-input">
-            <input type="submit" class="submit-btn" value="Search">
-        </form>
-    </div>
-</section>
-<main>
-    <div class="gallery">
-    </div>
-</main>
-<div class="nav-button">
-    <button class="more">More</button>
-</div>
-    `;
-  const auth = "563492ad6f9170000100000159148ec43af24289afaa8a65906d9c42";
+  createVideosHtml();
+
+  //the search button
   const gallery = document.querySelector(".gallery");
   const searchInput = document.querySelector(".search-input");
   const form = document.querySelector(".search-form");
   let searchValue;
-  const more = document.querySelector(".more");
-  let page = 1;
-  let fetchLink;
-  let currentSearch;
-  //add event listener
-  searchInput.addEventListener("input", updateInput);
-  function updateInput(e) {
-    searchValue = e.target.value;
-    currentSearch = searchValue;
-  }
-  //add another event listener
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    searchPhotos(searchValue);
-  });
 
-  //add another event listener
-  more.addEventListener("click", loadMore);
-
-  async function fetchApi(url) {
-    const dataFetch = await fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        Authorization: auth,
-      },
-    });
-    const data = await dataFetch.json();
-    return data;
-  }
-
-  async function generatingPictures(data) {
-    data.photos.forEach((photo) => {
-      const galleryImg = document.createElement("div");
-      galleryImg.classList.add("gallery-img");
-      galleryImg.innerHTML = `
-<div class = "gallery-info">
-<p>${photo.photographer}</p>
-</div>
-<img src = ${photo.src.large}></img>
-<a href = ${photo.src.original}>Download</a>
-`;
-      gallery.appendChild(galleryImg);
-    });
-  }
+  const fetchData = async (searchTerm) => {
+    const parameters = { params: { apikey: "ad16638d", s: searchTerm } };
+    const response = await axios.get("http://www.omdbapi.com/", parameters);
+    if (response.data.Error) {
+      return [];
+    }
+    return response.data.Search;
+  };
 
   function clear() {
     gallery.innerHTML = "";
     searchInput.value = "";
   }
 
-  async function curatedPhotos() {
-    fetchLink = "https://api.pexels.com/v1/curated?per_page=15&page=1";
-    const data = await fetchApi(fetchLink);
-    generatingPictures(data);
-  }
-
-  async function searchPhotos(query) {
-    clear();
-    fetchLink = `https://api.pexels.com/v1/search?query=${query}+query&per_page=15&page=1`;
-    const data = await fetchApi(fetchLink);
-    generatingPictures(data);
-  }
-
-  async function loadMore() {
-    page++;
-    if (currentSearch) {
-      fetchLink = `https://api.pexels.com/v1/search?query=${currentSearch}+query&per_page=15&page=${page}`;
-    } else {
-      fetchLink = `https://api.pexels.com/v1/curated?per_page=15&page=${page}`;
-    }
-    const data = await fetchApi(fetchLink);
-    generatingPictures(data);
-  }
-
-  curatedPhotos();
-});
-
-
-videobtn.addEventListener('click', (e) => {
-  e.preventDefault();
-  container.innerHTML = "";
-  container.innerHTML = `
-    <section>
-    <div class="box">
-        <form class="search-form">
-            <input type="text" name="search" placeholder="Type..." class="search-input">
-            <input type="submit" class="submit-btn" value="Search">
-        </form>
-    </div>
-</section>
-<main>
-  <div class="gallery"></div>
-  <div class="summary opacity"></div>
-</main>`
-  
-//the search button
-const gallery = document.querySelector('.gallery');
-const searchInput = document.querySelector('.search-input');
-const form = document.querySelector('.search-form');
-let searchValue;
-
-
-const fetchData = async (searchTerm) => {
-    const parameters = {params: {apikey: "ad16638d", s: searchTerm}}
-    const response = await axios.get('http://www.omdbapi.com/', parameters);
-    if (response.data.Error) {
-        return [];
-    }
-    return response.data.Search;
-}
-
-function clear() {
-    gallery.innerHTML = "";
-    searchInput.value = ''; 
-}
-
-//add event listener
-searchInput.addEventListener('input', updateInput);
-function updateInput(e) {
+  //add event listener
+  searchInput.addEventListener("input", updateInput);
+  function updateInput(e) {
     searchValue = e.target.value;
-}
+  }
 
-form.addEventListener('submit', (e) => {
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
     searchMovie(searchValue);
-})
+  });
 
-
-async function generatingMovie(data) {
-  data.forEach(movie => {
-    const imgSrc = movie.Poster === 'N/A' ? "./Image-Not-Available_.jpg" : movie.Poster;
-    const summary = document.querySelector('.summary');
-    const galleryMovie = document.createElement('div');
-    galleryMovie.classList.add('gallery-movie');
-    galleryMovie.innerHTML = `
+  async function generatingMovie(data) {
+    data.forEach((movie) => {
+      const imgSrc =
+        movie.Poster === "N/A"
+          ? "./Photos/Image-Not-Available_.jpg"
+          : movie.Poster;
+      const summary = document.querySelector(".summary");
+      const galleryMovie = document.createElement("div");
+      galleryMovie.classList.add("gallery-movie");
+      galleryMovie.innerHTML = `
     <div class = "movie-info">
         <p> ${movie.Title}</p>
     </div>
     <img src="${imgSrc}"/>
     `;
-    
-    gallery.appendChild(galleryMovie);
-    galleryMovie.addEventListener('click', async () => {
-        const movieInfo = document.createElement('div');
-        summary.classList.add('opacity');
-      movieInfo.classList.add('movieInfo');
-      const movieSelected = await onMovieClick(movie);
-      console.log(movieSelected);
+
+      gallery.appendChild(galleryMovie);
+      galleryMovie.addEventListener("click", async () => {
+        const movieInfo = document.createElement("div");
+        summary.classList.add("opacity");
+        movieInfo.classList.add("movieInfo");
+        const movieSelected = await onMovieClick(movie);
+        console.log(movieSelected);
         movieInfo.innerHTML = `
         <div class='media'>
         <div class='image'>
@@ -223,30 +103,26 @@ async function generatingMovie(data) {
       <p>IMDB Votes: ${movieSelected.imdbVotes}</p>
       <button class='close'>Close</button>
     `;
-      summary.appendChild(movieInfo);
-      const btnClose = document.querySelector('.close');
-    btnClose.addEventListener('click', event => {
-      summary.innerHTML = '';
-      })
-    })
-      
+        summary.appendChild(movieInfo);
+        const btnClose = document.querySelector(".close");
+        btnClose.addEventListener("click", (event) => {
+          summary.innerHTML = "";
+        });
+      });
     });
-}
-   
-const onMovieClick = async (movie) => {
-    const parameters = {params: {apikey: "ad16638d", i: movie.imdbID}}
-    const response = await axios.get('http://www.omdbapi.com/', parameters);
-    return response.data;
-}
-  
+  }
 
-async function searchMovie(query) {
+  const onMovieClick = async (movie) => {
+    const parameters = { params: { apikey: "ad16638d", i: movie.imdbID } };
+    const response = await axios.get("http://www.omdbapi.com/", parameters);
+    return response.data;
+  };
+
+  async function searchMovie(query) {
     clear();
     const data = await fetchData(query);
     generatingMovie(data);
-}
+  }
 
-searchMovie('dragon');
-})
-
-
+  searchMovie("dragon");
+});

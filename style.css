@@ -13,7 +13,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-image: url(./bg-banner.jpg);
+    background-image: url(./Photos/bg-banner.jpg);
     background-repeat: no-repeat;
     background-size: cover;
     width: 80%;
@@ -136,7 +136,18 @@ transform: translateY(0px);
 .column {
 z-index: 2;
 transition: .5s;
+
 }
+
+
+.column i {
+    font-size: 5rem;
+}
+.column img {
+    width: 90%;
+    border-radius: 32px;
+}
+
 
 .column p {
     font-size: 1.2rem;
