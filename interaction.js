@@ -94,9 +94,9 @@ photobtn.addEventListener("click", (e) => {
       galleryImg.innerHTML = `
 <div class = "gallery-info">
 <p>${photo.photographer}</p>
-<a href = ${photo.src.original}>Download</a>
 </div>
 <img src = ${photo.src.large}></img>
+<a href = ${photo.src.original}>Download</a>
 `;
       gallery.appendChild(galleryImg);
     });
@@ -186,27 +186,29 @@ form.addEventListener('submit', (e) => {
 
 
 async function generatingMovie(data) {
-    data.forEach(movie => {
-        const summary = document.querySelector('.summary');
+  data.forEach(movie => {
+    const imgSrc = movie.Poster === 'N/A' ? "./Image-Not-Available_.jpg" : movie.Poster;
+    const summary = document.querySelector('.summary');
     const galleryMovie = document.createElement('div');
     galleryMovie.classList.add('gallery-movie');
     galleryMovie.innerHTML = `
     <div class = "movie-info">
         <p> ${movie.Title}</p>
     </div>
-    <img src = ${movie.Poster}></img>
+    <img src="${imgSrc}"/>
     `;
     
     gallery.appendChild(galleryMovie);
     galleryMovie.addEventListener('click', async () => {
         const movieInfo = document.createElement('div');
         summary.classList.add('opacity');
-        movieInfo.classList.add('movieInfo');
-        const movieSelected = await onMovieClick(movie);
+      movieInfo.classList.add('movieInfo');
+      const movieSelected = await onMovieClick(movie);
+      console.log(movieSelected);
         movieInfo.innerHTML = `
         <div class='media'>
         <div class='image'>
-          <img src='${movieSelected.Poster}'/>
+        <img src="${imgSrc}"/>
         </div>
         <div class='content'>
           <h1>${movieSelected.Title}</h1>
@@ -235,7 +237,6 @@ const onMovieClick = async (movie) => {
     const parameters = {params: {apikey: "ad16638d", i: movie.imdbID}}
     const response = await axios.get('http://www.omdbapi.com/', parameters);
     return response.data;
-    
 }
   
 
