@@ -23,23 +23,19 @@ const fetchData = async (searchTerm) => {
       return [];
     }
     return response.data.Search;
-  }
-  catch (error) {
+  } catch (error) {
     catchError(error);
   }
-}
+};
 
 const onMovieClick = async (movie) => {
   try {
     const parameters = { params: { apikey: "ad16638d", i: movie.imdbID } };
     const response = await axios.get("http://www.omdbapi.com/", parameters);
     return response.data;
-  }
-  catch (error) {
+  } catch (error) {
     catchError(error);
   }
-  
-  
 };
 
 function createSummeryHtml(div, item) {
@@ -67,7 +63,7 @@ function createSummeryHtml(div, item) {
 
 function catchError(error) {
   const container = document.querySelector('.container');
-    container.innerHTML = `
-    <h1 class='error-message'>${error.message}</h1>
-    `
+  container.innerHTML = `
+  <h1 class='error-message'>${error.message}</h1>
+  `
 }
