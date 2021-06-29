@@ -1,4 +1,3 @@
-
 //Create HTML Home
 function creatHtmlHome() {
   const body = document.body;
@@ -33,37 +32,37 @@ function creatHtmlHome() {
 
 //Create Logo effect
 function createEffect() {
-const title = document.querySelector("#logo");
-titleText = title.textContent;
-titleArray = titleText.split("");
+  const title = document.querySelector("#logo");
+  titleText = title.textContent;
+  titleArray = titleText.split("");
 
-title.innerHTML = "";
-for (let i = 0; i < titleArray.length; i++) {
-  title.innerHTML += `<span>${titleArray[i]}</span>`;
-}
+  title.innerHTML = "";
+  for (let i = 0; i < titleArray.length; i++) {
+    title.innerHTML += `<span>${titleArray[i]}</span>`;
+  }
 
-let char = 0;
-let interval = setInterval(onTrack, 100);
+  let char = 0;
+  let interval = setInterval(onTrack, 100);
 
-function onTrack() {
-  const span = title.querySelectorAll("span")[char];
-  span.classList.add("fade");
-  char++;
-  if (char === titleArray.length) {
-    complete();
+  function onTrack() {
+    const span = title.querySelectorAll("span")[char];
+    span.classList.add("fade");
+    char++;
+    if (char === titleArray.length) {
+      complete();
+    }
+  }
+
+  function complete() {
+    clearInterval(interval);
+    interval = null;
   }
 }
 
-function complete() {
-  clearInterval(interval);
-  interval = null;
-}
-}
-
-//create photoPageHTML 
+//create photoPageHTML
 function createPhotoPageHTML() {
-    const container = document.querySelector(".container");
-    container.innerHTML = `
+  const container = document.querySelector(".container");
+  container.innerHTML = `
     <section>
     <div class="box">
         <form class="search-form">
@@ -83,57 +82,67 @@ function createPhotoPageHTML() {
 }
 
 async function fetchApi(url) {
-    const auth = "563492ad6f9170000100000159148ec43af24289afaa8a65906d9c42";
-    const dataFetch = await fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        Authorization: auth,
-      },
-    });
-    const data = await dataFetch.json();
-    return data;
+  const auth = "563492ad6f9170000100000159148ec43af24289afaa8a65906d9c42";
+  const dataFetch = await fetch(url, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: auth,
+    },
+  });
+  const data = await dataFetch.json();
+  return data;
 }
-  
-async function generatingPictures(data) {
-    const gallery = document.querySelector(".gallery");
-    data.photos.forEach((photo) => {
-      const galleryImg = document.createElement("div");
-      galleryImg.classList.add("gallery-img");
-      galleryImg.innerHTML = `
+
+function generatingPictures(data) {
+  const gallery = document.querySelector(".gallery");
+  data.photos.forEach((photo) => {
+    const galleryImg = document.createElement("div");
+    galleryImg.classList.add("gallery-img");
+    galleryImg.innerHTML = `
 <div class = "gallery-info">
-<p>${photo.photographer}</p>
+<p>Photographer: ${photo.photographer}</p>
 </div>
 <img src = ${photo.src.large}></img>
-<a href = ${photo.src.original}>Download</a>
+<a href = ${photo.src.original} target="blank">Download Original</a>
 `;
-      gallery.appendChild(galleryImg);
-    });
+    gallery.appendChild(galleryImg);
+  });
 }
+
 async function curatedPhotos() {
+  try {
     fetchLink = "https://api.pexels.com/v1/curated?per_page=15&page=1";
     const data = await fetchApi(fetchLink);
     generatingPictures(data);
+  } catch (error) {
+    catchError(error);
+  }
 }
-  
+
 function clear() {
-    const gallery = document.querySelector(".gallery");
-    const searchInput = document.querySelector(".search-input");
-    gallery.innerHTML = "";
-    searchInput.value = "";
+  const gallery = document.querySelector(".gallery");
+  const searchInput = document.querySelector(".search-input");
+  gallery.innerHTML = "";
+  searchInput.value = "";
 }
-  
+
 async function searchPhotos(query) {
+  try {
     clear();
     fetchLink = `https://api.pexels.com/v1/search?query=${query}+query&per_page=15&page=1`;
     const data = await fetchApi(fetchLink);
     generatingPictures(data);
+  } catch (error) {
+    catchError(error);
+  }
 }
-  
+
 let page = 1;
-  let fetchLink;
-  let currentSearch;
+let fetchLink;
+let currentSearch;
 async function loadMore() {
+  try {
     page++;
     if (currentSearch) {
       fetchLink = `https://api.pexels.com/v1/search?query=${currentSearch}+query&per_page=15&page=${page}`;
@@ -142,4 +151,7 @@ async function loadMore() {
     }
     const data = await fetchApi(fetchLink);
     generatingPictures(data);
+  } catch (error) {
+    catchError(error);
   }
+}
